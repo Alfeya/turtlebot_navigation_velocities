@@ -66,21 +66,41 @@ int main(int argc, char** argv){
 
 		// calculate projected point
 		double v = sqrt( pow( it->vx, 2 ) + pow( it->vy, 2 ) );
-		double x_proj = it->x + it->vx * v / 2 / 0.5; // acceleration = 0.5
-		double y_proj = it->y + it->vy * v / 2 / 0.5; // acceleration = 0.5
+		double delta_x = it->vx * v / 2 / 0.5; // acceleration = 0.5
+		double delta_y = it->vy * v / 2 / 0.5; // acceleration = 0.5
 
-		std::cout << "Proj target x: " << x_proj << ", y: " << y_proj << std::endl;
+		// acceleration track 0 -> 1
+		double x_proj_0 = it->x - delta_x;
+		double y_proj_0 = it->y - delta_y;
+
+		double x_proj_1 = it->x + delta_x;
+		double y_proj_1 = it->y + delta_y;
+
+		std::cout << "Proj target 0 x: " << x_proj_0 << ", y: " << y_proj_0 << std::endl;
+		std::cout << "Proj target 1 x: " << x_proj_1 << ", y: " << y_proj_1 << std::endl;
 
 		// send command
 		goal.target_pose.header.frame_id = "/map";
 		goal.target_pose.header.stamp = ros::Time::now();
 
-		goal.target_pose.pose.position.x = x_proj;
-		goal.target_pose.pose.position.y = y_proj;
+		goal.target_pose.pose.position.x = x_proj_0;
+		goal.target_pose.pose.position.y = y_proj_0;
 		tf::quaternionTFToMsg( tf::createQuaternionFromYaw( atan2( it->vy, it->vx ) ), 
 							   goal.target_pose.pose.orientation );
 
-		ROS_INFO("Sending goal");
+		ROS_INFO("Sending goal to 0 point");
+		ac.sendGoal(goal);
+
+		ac.waitForResult();
+
+		if(ac.getState() != actionlib::SimpleClientGoalState::SUCCEEDED)
+			return -1;
+
+		// move to point 1(orientation is the same)
+		goal.target_pose.pose.position.x = x_proj_1;
+		goal.target_pose.pose.position.y = y_proj_1;
+
+		ROS_INFO("Sending goal to 1 point");
 		ac.sendGoal(goal);
 
 		bool done = false;
@@ -100,7 +120,7 @@ int main(int argc, char** argv){
 			}
 
 			std::cout << "Robot moving x: " << transform.getOrigin().x() << ", y: " << transform.getOrigin().y() << std::endl;
-			if( fabs( transform.getOrigin().x() - it->x ) < 0.15 && fabs( transform.getOrigin().y() - it->y ) < 0.15 )
+			if( fabs( transform.getOrigin().x() - it->x ) < 0.1 && fabs( transform.getOrigin().y() - it->y ) < 0.1 )
 				done = true;
 		}
 		

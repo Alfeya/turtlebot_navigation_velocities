@@ -6,13 +6,13 @@ To run the program the following steps in strict order.
     
     roslaunch turtlebot_gazebo turtlebot_playground.launch
 
-2) Run slam map generation
+2) Run navigation module with known map
 
     a) edit file playground.yaml, set your full path to playground.pgm file
     
     b) roslaunch turtlebot_gazebo amcl_demo.launch map_file:=<full_path_to_playground.yaml>
 
-3) (optional) Run map visualiser
+3) Run map ad navigation visualiser
   
     roslaunch turtlebot_rviz_launchers view_navigation.launch
 
@@ -22,6 +22,8 @@ To run the program the following steps in strict order.
 
 5) Build and run the program
 
+    cd ~/catkin_ws/
+    source devel/setup.bash
     catkin_make --pkg turtlebot_navigation_velocities
     rosrun turtlebot_navigation_velocities turtlebot_navigation_velocities
 

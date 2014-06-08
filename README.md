@@ -7,7 +7,9 @@ To run the program the following steps in strict order.
     roslaunch turtlebot_gazebo turtlebot_playground.launch
 
 2) Run slam map generation
+
     a) edit file playground.yaml, set your full path to playground.pgm file
+    
     b) roslaunch turtlebot_gazebo amcl_demo.launch map_file:=<full_path_to_playground.yaml>
 
 3) (optional) Run map visualiser

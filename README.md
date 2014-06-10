@@ -2,6 +2,10 @@ turtlebot_navigation
 ====================
 To run the program the following steps in strict order.
 
+To prepare ubuntu 12.04 to run project use script
+
+    ./install.sh
+
 1) Run turtlebot simulation
     
     roslaunch turtlebot_gazebo turtlebot_playground.launch
